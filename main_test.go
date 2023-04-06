@@ -1,13 +1,12 @@
-package main_test
+package main
 
 import (
-	"github.com/benjaminellmer/CD_Exercise_02.git/main"
 	"log"
 	"os"
 	"testing"
 )
 
-var app main.App
+var app App
 
 // Note: M is a type passed to a TestMain function to run the actual tests.
 func TestMain(m *testing.M) {
