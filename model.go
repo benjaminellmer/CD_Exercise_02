@@ -47,7 +47,8 @@ func getProducts(db *sql.DB, start int, count int) ([]product, error) {
 	// Note: This block is then executed when the function returns
 	defer rows.Close()
 
-	var products []product
+	// We do not want to have nil slice declaration, because we want to return an empty array when nothing is found
+	products := []product{}
 
 	for rows.Next() {
 		var p product
