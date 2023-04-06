@@ -28,8 +28,11 @@ func (app *App) Initialize(user string, password string, dbname string) {
 	}
 
 	app.Router = mux.NewRouter()
+	app.initializeRoutes()
 }
-func (app *App) Run(addr string) {}
+func (app *App) Run(addr string) {
+	log.Fatal(http.ListenAndServe(addr, app.Router))
+}
 
 func (app *App) initializeRoutes() {
 	app.Router.HandleFunc("/products", app.getProducts).Methods("GET")
