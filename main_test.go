@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"strconv"
 	"testing"
@@ -129,13 +130,6 @@ func TestGetProduct(t *testing.T) {
 	checkResponseCode(t, http.StatusOK, response.Code)
 }
 
-func addProducts(count int) {
-	for i := 0; i < count; i++ {
-		// Note: strconv makes a string out of the int
-		app.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product"+strconv.Itoa(i), (i+1.0)*10)
-	}
-}
-
 func TestUpdateProduct(t *testing.T) {
 	clearTable()
 	addProducts(1)
@@ -162,7 +156,6 @@ func TestUpdateProduct(t *testing.T) {
 	if jsonResponse["name"] == originalProduct["name"] {
 		t.Errorf("Expected the name to change from '%v' to '%v'. Got '%v'", originalProduct["name"], jsonResponse["name"], jsonResponse["name"])
 	}
-
 	if jsonResponse["price"] == originalProduct["price"] {
 		t.Errorf("Expected the price to change from '%v' to '%v'. Got '%v'", originalProduct["price"], jsonResponse["price"], jsonResponse["price"])
 	}
@@ -183,4 +176,51 @@ func TestDeleteProduct(t *testing.T) {
 	req, _ = http.NewRequest("GET", "/product/1", nil)
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNotFound, response.Code)
+}
+
+func TestFindProductsByName(t *testing.T) {
+	clearTable()
+	addProduct("red ball", 20)
+	addProduct("ball", 20)
+	addProduct("phone", 500)
+
+	query := url.Values{}
+	query.Set("name", "ball")
+	requestUrl := "/product/search?" + query.Encode()
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var products []product
+	if err := json.Unmarshal(response.Body.Bytes(), &products); err != nil {
+		t.Error("Error parsing body!")
+	}
+
+	checkProduct(t, products[0], product{ID: 1, Name: "red ball", Price: 20})
+	checkProduct(t, products[1], product{ID: 2, Name: "ball", Price: 20})
+}
+
+func addProducts(count int) {
+	for i := 0; i < count; i++ {
+		// Note: strconv makes a string out of the int
+		addProduct("Product"+strconv.Itoa(i), float64((i+1.0)*10))
+	}
+}
+
+func addProduct(name string, price float64) {
+	app.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", name, price)
+}
+
+func checkProduct(t *testing.T, actual product, expected product) {
+	if actual.ID != expected.ID {
+		t.Errorf("Expected the id %v. Got %v", expected.ID, actual.ID)
+	}
+	if actual.Name != expected.Name {
+		t.Errorf("Expected the name %v. Got %v", expected.ID, actual.ID)
+	}
+	if actual.Price != expected.Price {
+		t.Errorf("Expected the price %v. Got %v", expected.ID, actual.ID)
+	}
 }

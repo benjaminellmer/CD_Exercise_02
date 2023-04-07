@@ -2,6 +2,8 @@ package main
 
 import (
 	"database/sql"
+	"regexp"
+	"strings"
 )
 
 type product struct {
@@ -56,6 +58,31 @@ func getProducts(db *sql.DB, start int, count int) ([]product, error) {
 			return nil, err
 		}
 		products = append(products, p)
+	}
+	return products, nil
+}
+
+func findProductByName(db *sql.DB, searchTerm string) ([]product, error) {
+	rows, err := db.Query("SELECT id, name, price FROM products")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	products := []product{}
+
+	regex := regexp.MustCompile(searchTerm)
+
+	for rows.Next() {
+		var product product
+		if err := rows.Scan(&product.ID, &product.Name, &product.Price); err != nil {
+			return nil, err
+		}
+
+		if regex.MatchString(strings.ToLower(product.Name)) {
+			products = append(products, product)
+		}
 	}
 	return products, nil
 }

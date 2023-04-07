@@ -36,6 +36,7 @@ func (app *App) Run(addr string) {
 
 func (app *App) initializeRoutes() {
 	app.Router.HandleFunc("/products", app.getProducts).Methods("GET")
+	app.Router.HandleFunc("/product/search", app.findProductByName).Methods("GET")
 	app.Router.HandleFunc("/product", app.createProduct).Methods("POST")
 	app.Router.HandleFunc("/product/{id:[0-9]+}", app.getProduct).Methods("GET")
 	app.Router.HandleFunc("/product/{id:[0-9]+}", app.updateProduct).Methods("PUT")
@@ -139,6 +140,23 @@ func (app *App) deleteProduct(responseWriter http.ResponseWriter, request *http.
 	}
 
 	respondWithJSON(responseWriter, http.StatusOK, map[string]string{"result": "success"})
+}
+
+func (app *App) findProductByName(responseWriter http.ResponseWriter, request *http.Request) {
+	searchTerm := request.FormValue("name")
+
+	if searchTerm == "" {
+		respondWithError(responseWriter, http.StatusBadRequest, "Empty name search string")
+		return
+	}
+
+	products, err := findProductByName(app.DB, searchTerm)
+	if err != nil {
+		respondWithError(responseWriter, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(responseWriter, http.StatusOK, products)
 }
 
 func respondWithJSON(responseWriter http.ResponseWriter, statusCode int, payload interface{}) {
