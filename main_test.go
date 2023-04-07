@@ -69,7 +69,7 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 
 func checkResponseCode(t *testing.T, expected int, actual int) {
 	if expected != actual {
-		t.Errorf("Expeted response Code %d. Got %d\n", expected, actual)
+		t.Errorf("Expected response Code %d. Got %d\n", expected, actual)
 	}
 }
 
@@ -181,7 +181,7 @@ func TestDeleteProduct(t *testing.T) {
 func TestFindProductsByName(t *testing.T) {
 	clearTable()
 	addProduct("red ball", 20)
-	addProduct("ball", 20)
+	addProduct("ball", 25)
 	addProduct("phone", 500)
 
 	query := url.Values{}
@@ -198,8 +198,41 @@ func TestFindProductsByName(t *testing.T) {
 		t.Error("Error parsing body!")
 	}
 
+	if len(products) != 2 {
+		log.Fatalf("Expected to receive 2 products. Received %d", len(products))
+	}
+
 	checkProduct(t, products[0], product{ID: 1, Name: "red ball", Price: 20})
-	checkProduct(t, products[1], product{ID: 2, Name: "ball", Price: 20})
+	checkProduct(t, products[1], product{ID: 2, Name: "ball", Price: 25})
+}
+
+func TestGetProducts(t *testing.T) {
+	clearTable()
+	addProduct("red ball", 20)
+	addProduct("ball", 25)
+	addProduct("phone", 500)
+
+	query := url.Values{}
+	query.Set("start", "0")
+	query.Set("count", "2")
+	requestUrl := "/products?" + query.Encode()
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var products []product
+	if err := json.Unmarshal(response.Body.Bytes(), &products); err != nil {
+		t.Error("Error parsing body!")
+	}
+
+	if len(products) != 2 {
+		log.Fatalf("Expected to receive 2 products. Received %d", len(products))
+	}
+
+	checkProduct(t, products[0], product{ID: 1, Name: "red ball", Price: 20})
+	checkProduct(t, products[1], product{ID: 2, Name: "ball", Price: 25})
 }
 
 func addProducts(count int) {
