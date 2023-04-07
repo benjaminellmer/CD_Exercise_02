@@ -66,6 +66,12 @@ func (app *App) getProduct(responseWriter http.ResponseWriter, request *http.Req
 func (app *App) getProducts(responseWriter http.ResponseWriter, request *http.Request) {
 	count, _ := strconv.Atoi(request.FormValue("count"))
 	start, _ := strconv.Atoi(request.FormValue("start"))
+	sortProperty := request.FormValue("sortProperty")
+	sortDirection := request.FormValue("sortDirection")
+
+	if sortProperty != "" && sortDirection == "" {
+		sortDirection = "asc"
+	}
 
 	if count > maxPageSize || count < 1 {
 		count = maxPageSize
@@ -74,7 +80,7 @@ func (app *App) getProducts(responseWriter http.ResponseWriter, request *http.Re
 		start = 0
 	}
 
-	products, err := getProducts(app.DB, start, count)
+	products, err := getProducts(app.DB, start, count, sortProperty, sortDirection)
 	if err != nil {
 		respondWithError(responseWriter, http.StatusInternalServerError, err.Error())
 		return

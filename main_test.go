@@ -235,6 +235,66 @@ func TestGetProducts(t *testing.T) {
 	checkProduct(t, products[1], product{ID: 2, Name: "ball", Price: 25})
 }
 
+func TestGetProductsSortedByName(t *testing.T) {
+	clearTable()
+	addProduct("red ball", 20)
+	addProduct("ball", 25)
+	addProduct("phone", 500)
+
+	query := url.Values{}
+	query.Set("sortProperty", "name")
+	query.Set("sortDirection", "asc")
+	requestUrl := "/products?" + query.Encode()
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var products []product
+	if err := json.Unmarshal(response.Body.Bytes(), &products); err != nil {
+		t.Error("Error parsing body!")
+	}
+
+	if len(products) != 3 {
+		log.Fatalf("Expected to receive 3 products. Received %d", len(products))
+	}
+
+	checkProduct(t, products[0], product{ID: 2, Name: "ball", Price: 25})
+	checkProduct(t, products[1], product{ID: 3, Name: "phone", Price: 500})
+	checkProduct(t, products[2], product{ID: 1, Name: "red ball", Price: 20})
+}
+
+func TestGetProductsSortedByPrice(t *testing.T) {
+	clearTable()
+	addProduct("red ball", 20)
+	addProduct("ball", 25)
+	addProduct("phone", 500)
+
+	query := url.Values{}
+	query.Set("sortProperty", "price")
+	query.Set("sortDirection", "desc")
+	requestUrl := "/products?" + query.Encode()
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var products []product
+	if err := json.Unmarshal(response.Body.Bytes(), &products); err != nil {
+		t.Error("Error parsing body!")
+	}
+
+	if len(products) != 3 {
+		log.Fatalf("Expected to receive 3 products. Received %d", len(products))
+	}
+
+	checkProduct(t, products[0], product{ID: 3, Name: "phone", Price: 500})
+	checkProduct(t, products[1], product{ID: 2, Name: "ball", Price: 25})
+	checkProduct(t, products[2], product{ID: 1, Name: "red ball", Price: 20})
+}
+
 func addProducts(count int) {
 	for i := 0; i < count; i++ {
 		// Note: strconv makes a string out of the int

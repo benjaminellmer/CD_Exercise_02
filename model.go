@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -39,25 +40,29 @@ func (p *product) createProduct(db *sql.DB) error {
 	return nil
 }
 
-func getProducts(db *sql.DB, start int, count int) ([]product, error) {
-	rows, err := db.Query("SELECT id, name, price FROM products LIMIT $1 OFFSET $2", count, start)
+func getProducts(db *sql.DB, start int, count int, sortProperty string, sortDirection string) ([]product, error) {
+	var query string
+	if sortProperty == "" && (strings.ToLower(sortDirection) != "asc" || strings.ToLower(sortDirection) != "desc") {
+		query = "SELECT id, name, price FROM products LIMIT $1 OFFSET $2"
+	} else {
+		query = fmt.Sprintf("SELECT id, name, price FROM products ORDER BY %s %s LIMIT $1 OFFSET $2", sortProperty, sortDirection)
+	}
+	rows, err := db.Query(query, count, start)
 
 	if err != nil {
 		return nil, err
 	}
 
-	// Note: This block is then executed when the function returns
 	defer rows.Close()
-
-	// We do not want to have nil slice declaration, because we want to return an empty array when nothing is found
 	products := []product{}
 
 	for rows.Next() {
-		var p product
-		if err := rows.Scan(&p.ID, &p.Name, &p.Price); err != nil {
+		var product product
+		if err := rows.Scan(&product.ID, &product.Name, &product.Price); err != nil {
 			return nil, err
 		}
-		products = append(products, p)
+
+		products = append(products, product)
 	}
 	return products, nil
 }
