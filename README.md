@@ -1,5 +1,6 @@
 # Status
 [![build](https://github.com/benjaminellmer/CD_Exercise_02/actions/workflows/go.yml/badge.svg)](https://github.com/benjaminellmer/CD_Exercise_02/actions/workflows/go.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=benjaminellmer_CD_Exercise_02&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=benjaminellmer_CD_Exercise_02)
 
 # Steps
 ## Postgres Setup
