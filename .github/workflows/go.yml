@@ -57,6 +57,9 @@ jobs:
           path: coverage.out
         
       - uses: sonarsource/sonarcloud-github-action@v1.9
+        with:
+          args:
+            -Dsonar.go.tests.reportPaths=${{ github.workspace }}/coverage.out
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
