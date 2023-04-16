@@ -9,6 +9,7 @@ on:
 
 jobs:
   build:
+    name: Build & Test
     runs-on: ubuntu-latest
     env: 
       APP_DB_USERNAME: postgres
@@ -37,11 +38,13 @@ jobs:
   
   sonarAnalyze:
     needs: build
-    name: Analyze using SonarCloud
+    name: Analyze Code
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
         
       - uses: sonarsource/sonarcloud-github-action@v1.9
         env:
