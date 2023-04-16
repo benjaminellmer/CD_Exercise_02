@@ -61,8 +61,9 @@ jobs:
         
       - uses: sonarsource/sonarcloud-github-action@v1.9
         with:
+          projectBaseDir: ${{ github.workspace }}
           args:
-            -Dsonar.go.coverage.reportPaths=${{ github.workspace }}/coverage.out
+            -Dsonar.go.coverage.reportPaths=coverage.out
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
