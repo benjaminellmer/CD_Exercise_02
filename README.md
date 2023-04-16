@@ -1,3 +1,6 @@
+# Status
+[![Go](https://github.com/benjaminellmer/CD_Exercise_02/actions/workflows/go.yml/badge.svg)](https://github.com/benjaminellmer/CD_Exercise_02/actions/workflows/go.yml)
+
 # Steps
 ## Postgres Setup
 Create postgres container using docker:
