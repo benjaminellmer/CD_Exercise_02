@@ -54,7 +54,10 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: coverage-report
-          path: coverage.out
+          path: ${{ github.workspace }}/coverage.out
+
+      - run:
+          ls ${{ github.workspace }}
         
       - uses: sonarsource/sonarcloud-github-action@v1.9
         with:
