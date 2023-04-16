@@ -55,9 +55,6 @@ jobs:
         with:
           name: coverage-report
           path: ${{ github.workspace }}/coverage-report
-
-      - run:
-          ls -lR ${{ github.workspace }}
         
       - uses: sonarsource/sonarcloud-github-action@v1.9
         with:
