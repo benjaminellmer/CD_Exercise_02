@@ -57,7 +57,7 @@ jobs:
           path: ${{ github.workspace }}/coverage.out
 
       - run:
-          ls ${{ github.workspace }}
+          ls -lR ${{ github.workspace }}
         
       - uses: sonarsource/sonarcloud-github-action@v1.9
         with:
