@@ -54,7 +54,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: coverage-report
-          path: ${{ github.workspace }}/coverage.out
+          path: ${{ github.workspace }}/coverage-report
 
       - run:
           ls -lR ${{ github.workspace }}
@@ -63,7 +63,7 @@ jobs:
         with:
           projectBaseDir: ${{ github.workspace }}
           args:
-            -Dsonar.go.coverage.reportPaths=coverage.out
+            -Dsonar.go.coverage.reportPaths=coverage-report/coverage.out
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
