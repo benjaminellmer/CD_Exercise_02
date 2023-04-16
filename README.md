@@ -1,5 +1,5 @@
 # Status
-[![Go](https://github.com/benjaminellmer/CD_Exercise_02/actions/workflows/go.yml/badge.svg)](https://github.com/benjaminellmer/CD_Exercise_02/actions/workflows/go.yml)
+[![build](https://github.com/benjaminellmer/CD_Exercise_02/actions/workflows/go.yml/badge.svg)](https://github.com/benjaminellmer/CD_Exercise_02/actions/workflows/go.yml)
 
 # Steps
 ## Postgres Setup
